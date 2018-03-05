@@ -4,25 +4,30 @@
         <item
             android:id="@+id/menu_home"
             android:icon="@drawable/ic_art_track_black_24dp"
-            android:title="Home"></item>
+            android:title="Home"
+            android:iconTint="@color/colorAccent"></item>
 
         <item
             android:id="@+id/menu_recently_played"
             android:icon="@drawable/ic_restore_black_24dp"
-            android:title="Recently Played"></item>
+            android:title="Recently Played"
+            android:iconTint="@color/colorAccent"></item>
         <item
             android:id="@+id/menu_choose_folder"
             android:icon="@drawable/ic_folder_black_24dp"
-            android:title="Choose folder"></item>
+            android:title="Choose folder"
+            android:iconTint="@color/colorAccent"></item>
     </group>
     <group android:id="@+id/group2">
         <item
             android:id="@+id/menu_preferences"
             android:icon="@drawable/ic_settings_black_24dp"
-            android:title="preferences"></item>
+            android:title="Preferences"
+            android:iconTint="@color/colorAccent"></item>
         <item
             android:id="@+id/menu_information"
             android:icon="@drawable/ic_info_black_24dp"
-            android:title="information"></item>
+            android:title="Information"
+            android:iconTint="@color/colorAccent"></item>
     </group>
 </menu>

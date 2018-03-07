@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout
+    android:id="@+id/videoActivity_drawer_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimaryDark"
+        tools:context="com.example.android.musicalstructure.DisplayVideoActivity">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_centerInParent="true" />
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_alignBottom="@id/viewPager"
+            android:background="@color/transparent" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/seekBar">
+
+            <ImageButton
+                android:id="@+id/playButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/button_play_drawable"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_pause_black_24dp"
+                android:tint="@color/colorAccent" />
+
+            <ImageButton
+                android:id="@+id/seekBackwards"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="15dp"
+                android:background="@color/transparent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_arrow_back_black_24dp"
+                android:tint="@color/colorAccent" />
+
+            <ImageButton
+                android:id="@+id/seekTowards"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginEnd="22dp"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@+id/playButton"
+                android:layout_toStartOf="@+id/playButton"
+                android:background="@color/transparent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_arrow_forward_black_24dp"
+                android:tint="@color/colorAccent" />
+
+            <ImageButton
+                android:id="@+id/fullScreen"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="15dp"
+                android:background="@color/transparent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_fullscreen_black_24dp"
+                android:tint="@color/colorAccent" />
+
+            <ImageButton
+                android:id="@+id/repeat"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="15dp"
+                android:layout_toLeftOf="@+id/fullScreen"
+                android:layout_toStartOf="@+id/fullScreen"
+                android:background="@color/transparent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_repeat_black_24dp"
+                android:tint="@color/colorAccent" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/viedoActivityNavigation"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@color/colorPrimary">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="2dp"
+                android:background="@color/colorPrimaryDark">
+
+                <include
+                    android:id="@+id/currentlyWorkinglayout"
+                    layout="@layout/video_layout" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginHorizontal="10dp"
+                android:background="@color/colorPrimaryLight" />
+
+            <ListView
+                android:id="@+id/videosListView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"></ListView>
+
+        </LinearLayout>
+    </android.support.design.widget.NavigationView>
+</android.support.v4.widget.DrawerLayout>

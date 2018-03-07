@@ -2,6 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:id="@+id/group1">
         <item
+            android:id="@+id/musicVideo"
+            android:icon="@drawable/ic_audiotrack_black_24dp"
+            android:title="Music"
+            android:iconTint="@color/colorAccent"></item>
+        <item
+            android:id="@+id/sync"
+            android:icon="@drawable/ic_sync_black_24dp"
+            android:title="Sync"
+            android:iconTint="@color/colorAccent"></item>
+        <item
             android:id="@+id/menu_home"
             android:icon="@drawable/ic_art_track_black_24dp"
             android:title="Home"

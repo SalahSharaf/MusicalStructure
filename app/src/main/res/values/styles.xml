@@ -1,5 +1,4 @@
 <resources>
-
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
@@ -9,5 +8,7 @@
         <item name="android:textColorPrimary">@color/colorAccent</item>
         <item name="android:background">@color/transparent</item>
     </style>
+
+    <style name="TextAppearance.Widget.ActionBar.Title" parent="@android:style/TextAppearance.Medium"></style>
 
 </resources>

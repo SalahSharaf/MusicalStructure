@@ -8,5 +8,5 @@
         android:title="Add To Play List"></item>
     <item
         android:id="@+id/song_menu_play"
-        android:title="Play"></item>
+        android:title="Play" ></item>
 </menu>

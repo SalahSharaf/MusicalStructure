@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Process;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.view.Gravity;
@@ -24,7 +26,7 @@ import java.util.ArrayList;
  * Created by ALQasem on 13/03/2018.
  */
 
-public class MusicListNavigationAdapter extends ArrayAdapter<MAudio> implements View.OnClickListener {
+public class MusicListNavigationAdapter extends ArrayAdapter<MAudio> implements View.OnClickListener, Runnable {
     Context context;
     ArrayList<MAudio> audios;
     ImageButton playSongButton;
@@ -34,6 +36,8 @@ public class MusicListNavigationAdapter extends ArrayAdapter<MAudio> implements 
     public MusicListNavigationAdapter(@NonNull Context context, ArrayList<MAudio> audios) {
         super(context, 0, audios);
         this.audios = audios;
+        Thread thread = new Thread(this);
+        thread.start();
     }
 
     @Override
@@ -113,8 +117,33 @@ public class MusicListNavigationAdapter extends ArrayAdapter<MAudio> implements 
             if (MusicDisplayActivity.position != (int) v.getTag(R.id.position)) {
                 CardView cardView = (CardView) v;
                 cardView.setBackgroundResource(R.color.colorPrimaryLight);
-                context.startActivity(new Intent(context, MusicDisplayActivity.class));
+                int position = (int) v.getTag(R.id.position);
+                MusicDisplayActivity.position = position;
+                MusicDisplayActivity.mediaPlayer = new MediaPlayer();
+                MusicDisplayActivity.mediaPlayer.release();
+                try {
+                    MusicDisplayActivity.mediaPlayer.setDataSource(audios.get(position).getData().getAbsolutePath());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                MusicDisplayActivity.mediaPlayer.start();
             }
         }
+    }
+
+    @Override
+    public void run() {
+        //android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+        if (Integer.getInteger(playSongButton.getTag(R.id.position).toString()) != MusicDisplayActivity.position) {
+            playSongButton.setSelected(false);
+        } else if (playSongButton.getTag(R.id.position) == Integer.getInteger(playSongButton.getTag(R.id.position).toString())) {
+            playSongButton.setSelected(true);
+        }
+        if (Integer.getInteger(cardView.getTag(R.id.position).toString()) != MusicDisplayActivity.position) {
+            cardView.setBackgroundResource(R.color.colorPrimary);
+        } else if (cardView.getTag(R.id.position) == Integer.getInteger(playSongButton.getTag(R.id.position).toString())) {
+            cardView.setBackgroundResource(R.color.colorPrimaryLight);
+        }
+
     }
 }

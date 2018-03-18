@@ -1,5 +1,7 @@
 package com.example.android.musicalstructure;
 
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +10,7 @@ import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.media.AudioPlaybackConfiguration;
 import android.media.MediaPlayer;
+import android.media.VolumeShaper;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -33,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -47,6 +51,7 @@ import static com.example.android.musicalstructure.DisplayVideoActivity.videoMed
 
 public class MusicDisplayActivity extends AppCompatActivity implements AppVisibilityDetector.AppVisibilityCallback {
     //ImageView circularImage, coverImage;
+
     ImageButton play, repeat, shuffle, seekforward, seekbackward;
     TextView text;
     DrawerLayout drawerLayout;
@@ -59,6 +64,7 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
     int currentMusicPosition;
     //RotateAnimation rotateAnimation;
     MusicListNavigationAdapter adapter;
+    boolean selected[] = new boolean[3];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,15 +74,47 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
         mAudios = MainActivity.audios;
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-       // circularImage = findViewById(R.id.music_activity_circularImage);
-       // coverImage = findViewById(R.id.music_activity_image);
+        AudioManager.OnAudioFocusChangeListener listener = new AudioManager.OnAudioFocusChangeListener() {
+            @Override
+            public void onAudioFocusChange(int focusChange) {
+                if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+                    mediaPlayer.start();
+                } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+                    mediaPlayer.stop();
+                } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+                    int MAX_VOLUME = 50;
+                    AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
+                    int soundVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
+                    float volume = (float) (1 - (Math.log(MAX_VOLUME - soundVolume) / Math.log(MAX_VOLUME)));
+                    mediaPlayer.setVolume(volume, volume);
+                } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+                    mediaPlayer.pause();
+                }
+            }
+        };
+        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        // Request audio focus for play back
+        int result = am.requestAudioFocus(listener,
+                // Use the music stream.
+                AudioManager.STREAM_MUSIC,
+                // Request permanent focus.
+                AudioManager.AUDIOFOCUS_GAIN);
+        /////
+        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+
+        } else if (result == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
+            Toast.makeText(this, "Error Occurred", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, this.getClass()));
+        }
+        // circularImage = findViewById(R.id.music_activity_circularImage);
+        // coverImage = findViewById(R.id.music_activity_image);
         play = findViewById(R.id.playButton);
         repeat = findViewById(R.id.repeat);
         shuffle = findViewById(R.id.shuffle);
         seekbackward = findViewById(R.id.seekBackwards);
         seekforward = findViewById(R.id.seekTowards);
         ////////////////////////
-       // circularRotatingAnimation(6000);
+        // circularRotatingAnimation(6000);
         text = new TextView(this);
         text.setTextColor(getResources().getColor(R.color.colorAccent));
         text.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
@@ -142,22 +180,22 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
         ///////////////////////////////////////////////////////////////
         Bitmap image = BitmapFactory.decodeFile(mAudios.get(position).getAlbumArtPath());
         if (image != null) {
-        //    circularImage.setImageBitmap(image);
-        //    coverImage.setImageBitmap(image);
+            //    circularImage.setImageBitmap(image);
+            //    coverImage.setImageBitmap(image);
         } else if (image == null) {
-         //   circularImage.setImageResource(R.drawable.a3);
-         //   coverImage.setImageResource(R.drawable.a2);
+            //   circularImage.setImageResource(R.drawable.a3);
+            //   coverImage.setImageResource(R.drawable.a2);
         }
         ///////////////////////////////////////////////////////////////
         noRepeat();
     }
 
-  //  private void circularRotatingAnimation(int duration) {
-   //     rotateAnimation = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-   //     rotateAnimation.setDuration(duration);
-   //     rotateAnimation.setRepeatCount(Animation.INFINITE);
-   //     circularImage.setAnimation(rotateAnimation);
-  //  }
+    //  private void circularRotatingAnimation(int duration) {
+    //     rotateAnimation = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+    //     rotateAnimation.setDuration(duration);
+    //     rotateAnimation.setRepeatCount(Animation.INFINITE);
+    //     circularImage.setAnimation(rotateAnimation);
+    //  }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -194,12 +232,12 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
         if (mediaPlayer.isPlaying()) {
             play.setSelected(false);
             mediaPlayer.pause();
-          //  circularImage.clearAnimation();
+            //  circularImage.clearAnimation();
         } else if (!mediaPlayer.isPlaying()) {
             play.setSelected(true);
             mediaPlayer.start();
-         //   circularImage.setAnimation(rotateAnimation);
-        //    circularImage.animate();
+            //   circularImage.setAnimation(rotateAnimation);
+            //    circularImage.animate();
         }
     }
 
@@ -237,16 +275,31 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
         PopupWindow menu = new PopupWindow(menuView, width, height, focusable);
         menu.showAtLocation(view, Gravity.CENTER_HORIZONTAL, (int) view.getX(), (int) view.getY());
         RadioGroup group = menuView.findViewById(R.id.options_radio_group);
+        RadioButton btn1 = menuView.findViewById(R.id.pop_up_window_No_repeat);
+        btn1.setChecked(selected[0]);
+        RadioButton btn2 = menuView.findViewById(R.id.pop_up_window_No_repeat);
+        btn2.setChecked(selected[1]);
+        RadioButton btn3 = menuView.findViewById(R.id.pop_up_window_No_repeat);
+        btn3.setChecked(selected[2]);
         group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.pop_up_window_No_repeat) {
+                    selected[0] = true;
+                    selected[1] = false;
+                    selected[2] = false;
                     Toast.makeText(getBaseContext(), "No Repeat", Toast.LENGTH_SHORT).show();
                     noRepeat();
                 } else if (checkedId == R.id.pop_up_window_repeat_all) {
+                    selected[0] = false;
+                    selected[1] = true;
+                    selected[2] = false;
                     Toast.makeText(MusicDisplayActivity.this, "Repeat All file", Toast.LENGTH_SHORT).show();
                     repeatAllFiles();
                 } else if (checkedId == R.id.pop_up_window_repeat_one) {
+                    selected[0] = false;
+                    selected[1] = false;
+                    selected[2] = true;
                     Toast.makeText(MusicDisplayActivity.this, "Repeat one file", Toast.LENGTH_SHORT).show();
                     repeatOneFile();
                 }
@@ -264,17 +317,7 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
     }
 
     private void repeatOneFile() {
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                try {
-                    mediaPlayer.setLooping(true);
-                } catch (Exception e) {
-                    Toast.makeText(getBaseContext(), "Error Occurred", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
+        mediaPlayer.setLooping(true);
     }
 
     private void repeatAllFiles() {
@@ -283,14 +326,16 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
             public void onCompletion(MediaPlayer mp) {
                 if (position >= mAudios.size()) {
                     position = 0;
-                } else if (position != mAudios.size() - 1) {
-                    position += 1;
+                } else if (position != (mAudios.size() - 1)) {
+                    position ++;
                     try {
-                        mediaPlayer.setDataSource(mAudios.get(position).getData().getAbsolutePath());
-                        videoMedia.start();
+                        mp.release();
+                        mp.setDataSource(mAudios.get(position).getData().getAbsolutePath());
+                        mp.prepare();
                     } catch (Exception e) {
                         Toast.makeText(MusicDisplayActivity.this, "Error Occurred", Toast.LENGTH_SHORT).show();
                     }
+                    mp.start();
                 }
             }
         });
@@ -300,12 +345,14 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
         outState.putInt("progress", mediaPlayer.getCurrentPosition());
+        outState.putBooleanArray("selected", selected);
     }
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState, PersistableBundle persistentState) {
         super.onRestoreInstanceState(savedInstanceState, persistentState);
         currentMusicPosition = savedInstanceState.getInt("progress");
+        selected = savedInstanceState.getBooleanArray("selected");
     }
 
     @Override
@@ -319,9 +366,9 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor cursor = getContentResolver().query(uri, null, null, null, null);
         if (cursor == null) {
-            Toast.makeText(MusicDisplayActivity.this, "Something Went Wrong.", Toast.LENGTH_LONG);
+            Toast.makeText(MusicDisplayActivity.this, "Error Occurred.", Toast.LENGTH_LONG).show();
         } else if (!cursor.moveToFirst()) {
-            Toast.makeText(MusicDisplayActivity.this, "No Music Found on SD Card.", Toast.LENGTH_LONG);
+            Toast.makeText(MusicDisplayActivity.this, "No Music Found on SD Card.", Toast.LENGTH_LONG).show();
         } else if (cursor != null && cursor.moveToNext()) {
 
             int title = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
@@ -356,8 +403,6 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
         }
         return audios;
     }
-
-
 }
 
 

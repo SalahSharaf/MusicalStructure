@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="wrap_content">
+
     <android.support.v7.widget.CardView
         android:id="@+id/layout2_card_view"
-        android:layout_marginTop="5dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        app:cardElevation="10dp"
         android:layout_marginHorizontal="5dp"
-        app:cardBackgroundColor="@color/colorPrimary">
-
+        android:layout_marginTop="5dp"
+        app:cardBackgroundColor="@color/colorPrimary"
+        app:cardElevation="10dp">
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackground">
 
             <ImageButton
                 android:id="@+id/layout2_options_button"
@@ -31,25 +32,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/layout2_options_button"
                 android:layout_toLeftOf="@id/layout2_song_play_button"
-                android:paddingLeft="10dp"
+                android:layout_toRightOf="@id/layout2_options_button"
                 android:lines="1"
+                android:paddingLeft="10dp"
                 android:text="video name"
                 android:textColor="@color/colorAccent"
-                android:textSize="16dp" />
+                android:textSize="12dp" />
 
             <ImageButton
                 android:id="@+id/layout2_song_play_button"
                 android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_height="50dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:background="@color/transparent"
-                android:scaleType="centerCrop"
                 android:src="@drawable/button_play_drawable" />
 
         </RelativeLayout>
     </android.support.v7.widget.CardView>
-</RelativeLayout>
+</LinearLayout>

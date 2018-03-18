@@ -14,13 +14,13 @@
         android:layout_height="match_parent">
 
         <include android:id="@+id/mainFragment" layout="@layout/main_auto_slider_layout"/>
-
         <ListView
             android:id="@+id/gridViewSongsList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/mainFragment"
             android:numColumns="1">
+
         </ListView>
 
     </RelativeLayout>

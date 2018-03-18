@@ -14,8 +14,9 @@ public class MAudio {
     private Long duration;
     private String track;
     int date;
+    String albumArtPath;
 
-    public MAudio(String album, String title, String artist, Long duration, String track, int date, File data) {
+    public MAudio(String album, String title, String artist, Long duration, String track, int date, File data, String albumArtPath) {
         this.album = album;
         this.artist = artist;
         this.duration = duration;
@@ -23,6 +24,15 @@ public class MAudio {
         this.date = date;
         this.data = data;
         this.title = title;
+        this.albumArtPath = albumArtPath;
+    }
+
+    public String getAlbumArtPath() {
+        return albumArtPath;
+    }
+
+    public void setAlbumArtPath(String albumArtPath) {
+        this.albumArtPath = albumArtPath;
     }
 
     public String getTitle() {

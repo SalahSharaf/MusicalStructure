@@ -1,33 +1,75 @@
 package com.example.android.musicalstructure;
 
 import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.io.File;
+import java.io.Serializable;
 
 /**
  * Created by ALQasem on 04/03/2018.
  */
-public class MVideo {
+public class MVideo implements Parcelable {
+
+    private int id;
     private File data;
     private String title;
     private String album;
-    private String artisit;
+    private String artist;
     private String category;
     private int date;
     private Long duration;
     private Bitmap thumbonial;
     private int resolution;
 
-    public MVideo(String album, String title, String artisit, String category, int date, Long duration, Bitmap thumbonial, int resolution, File data) {
+    public MVideo(int id, String album, String title, String artist, String category, int date, Long duration, Bitmap thumbonial, int resolution, File data) {
         this.album = album;
         this.title = title;
-        this.artisit = artisit;
+        this.artist = artist;
         this.category = category;
         this.date = date;
         this.duration = duration;
         this.thumbonial = thumbonial;
         this.resolution = resolution;
         this.data = data;
+        this.id = id;
+    }
+
+    protected MVideo(Parcel in) {
+        id = in.readInt();
+        title = in.readString();
+        album = in.readString();
+        artist = in.readString();
+        category = in.readString();
+        date = in.readInt();
+        if (in.readByte() == 0) {
+            duration = null;
+        } else {
+            duration = in.readLong();
+        }
+        thumbonial = in.readParcelable(Bitmap.class.getClassLoader());
+        resolution = in.readInt();
+    }
+
+    public static final Creator<MVideo> CREATOR = new Creator<MVideo>() {
+        @Override
+        public MVideo createFromParcel(Parcel in) {
+            return new MVideo(in);
+        }
+
+        @Override
+        public MVideo[] newArray(int size) {
+            return new MVideo[size];
+        }
+    };
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -71,11 +113,11 @@ public class MVideo {
     }
 
     public String getArtisit() {
-        return artisit;
+        return artist;
     }
 
     public void setArtisit(String artisit) {
-        this.artisit = artisit;
+        this.artist = artisit;
     }
 
     public String getCategory() {
@@ -102,4 +144,26 @@ public class MVideo {
         this.duration = duration;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(title);
+        dest.writeString(album);
+        dest.writeString(artist);
+        dest.writeString(category);
+        dest.writeInt(date);
+        if (duration == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(duration);
+        }
+        dest.writeParcelable(thumbonial, flags);
+        dest.writeInt(resolution);
+    }
 }

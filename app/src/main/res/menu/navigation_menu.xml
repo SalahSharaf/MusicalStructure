@@ -3,7 +3,7 @@
     <group android:id="@+id/group1">
         <item
             android:id="@+id/musicVideo"
-            android:icon="@drawable/ic_audiotrack_black_24dp"
+            android:icon="@drawable/ic_video_library_black_24dp"
             android:title="Music"
             android:iconTint="@color/colorAccent"></item>
         <item
@@ -16,7 +16,6 @@
             android:icon="@drawable/ic_art_track_black_24dp"
             android:title="Home"
             android:iconTint="@color/colorAccent"></item>
-
         <item
             android:id="@+id/menu_recently_played"
             android:icon="@drawable/ic_restore_black_24dp"

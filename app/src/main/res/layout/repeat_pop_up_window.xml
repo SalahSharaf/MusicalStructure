@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RadioGroup
+        android:id="@+id/options_radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:background="@color/colorPrimaryLight">
+        <RadioButton
+            android:id="@+id/pop_up_window_repeat_one"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Repeat One"
+            android:textColor="@color/colorAccent"/>
+        <RadioButton
+            android:id="@+id/pop_up_window_repeat_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Repeat All"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/colorAccent"/>
+        <RadioButton
+            android:id="@+id/pop_up_window_No_repeat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Repeat"
+            android:checked="true"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/colorAccent"/>
+    </RadioGroup>
+</LinearLayout>

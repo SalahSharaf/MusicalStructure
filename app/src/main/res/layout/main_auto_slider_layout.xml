@@ -16,9 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/autoSlider"
-        android:layout_alignParentLeft="true"
-        app:cardElevation="10dp">
-
+        app:cardElevation="5dp">
         <TextView
             android:id="@+id/autoSliderText"
             android:layout_width="match_parent"

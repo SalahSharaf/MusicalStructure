@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:background="@color/colorPrimaryDark">
+
+    <ImageButton
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/small_notification_video_thumbonial" />
+
+    <TextView
+        android:id="@+id/small_notification_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/small_notification_video_thumbonial"
+        android:layout_toRightOf="@+id/small_notification_video_thumbonial"
+        Style="@style/TextAppearance.Compat.Notification.Title"
+        android:text="Media Player"
+        android:textColor="@color/colorAccent"
+        android:textSize="12sp"
+        tools:ignore="MissingPrefix" />
+
+    <TextView
+        android:id="@+id/small_notification_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@+id/small_notification_video_thumbonial"
+        android:layout_toLeftOf="@+id/small_notification_play_button"
+        android:layout_toRightOf="@+id/small_notification_video_thumbonial"
+        android:layout_toStartOf="@+id/small_notification_play_button"
+        Style="@style/TextAppearance.Compat.Notification"
+        android:text="Media Player"
+        android:textColor="@color/colorAccent"
+        android:textSize="14sp"
+        tools:ignore="MissingPrefix" />
+
+    <ImageButton
+        android:id="@+id/small_notification_play_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:scaleType="centerCrop"
+        android:background="@color/transparent"
+        android:src="@drawable/cercle_play_button"
+        android:tint="@color/colorAccent" />
+</RelativeLayout>

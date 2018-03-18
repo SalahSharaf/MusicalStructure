@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        app:cardBackgroundColor="@color/colorPrimaryDark"
+        app:cardElevation="10dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/large_notification_thumbonail"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/large_notification_title"
+                android:background="@color/colorPrimary" />
+
+            <TextView
+                android:id="@+id/large_notification_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:text="Media Player"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/large_notification_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="9dp"
+                android:layout_marginStart="9dp"
+                android:layout_toEndOf="@+id/large_notification_thumbonail"
+                android:layout_toRightOf="@+id/large_notification_thumbonail"
+                android:text="video Name"
+                android:textAlignment="center"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp" />
+
+            <ImageButton
+                android:id="@+id/large_notification_play_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="85dp"
+                android:layout_marginRight="85dp"
+                android:background="@color/transparent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/cercle_play_button"
+                android:tint="@color/colorAccent" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:indeterminateDrawable="@color/colorPrimaryLight"
+                android:background="@color/colorAccent"
+                android:progress="0"
+                android:layout_alignLeft="@+id/large_notification_name"
+                android:layout_alignStart="@+id/large_notification_name"
+                android:layout_centerVertical="true" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</RelativeLayout>

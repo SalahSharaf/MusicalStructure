@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="mine1" type="id">mine1</item>
+    <item name="mine2" type="id">00121</item>
+    <item name="mine3" type="id">001230</item>
+    <item name="position" type="id">23</item>
+</resources>

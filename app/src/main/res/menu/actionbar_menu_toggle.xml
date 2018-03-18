@@ -5,6 +5,6 @@
     <item android:id="@+id/action_toggle"
         android:title=""
         app:showAsAction="always"
-        android:actionLayout="@layout/toggle_button_layuot">
+        android:actionLayout="@layout/toggle_button_layout">
     </item>
 </menu>

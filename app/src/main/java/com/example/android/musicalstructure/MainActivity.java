@@ -67,17 +67,12 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
         videosAdapter = new VideosAdapter(this, videos);
         musicAdapter = new MusicAdapter(this, audios);
         gridView.setAdapter(videosAdapter);
-        if (videosAdapter.getCount() == 0) {
-            Toast.makeText(this, "nothing to display", Toast.LENGTH_SHORT).show();
-        }
-
         //////////////////////////////////////// Navigation Drawer Section
         drawerLayout = findViewById(R.id.drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         actionBarDrawerToggle.setDrawerIndicatorEnabled(true);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
-
         navigationView = findViewById(R.id.navigationView);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -93,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
                             sliderLayout.setVisibility(View.VISIBLE);
                             autoSliderText.setVisibility(View.VISIBLE);
                             item.setTitle("Videos");
-
+                            bar.setTitle("Videos");
                         } else if (!menuItemSwitch) {
                             getAllMediaMp3Files();
                             gridView.setAdapter(musicAdapter);
@@ -102,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
                             sliderLayout.setVisibility(View.GONE);
                             autoSliderText.setVisibility(View.GONE);
                             item.setTitle("Music");
-
+                            bar.setTitle("Music");
                         }
                         break;
                     case R.id.sync:
@@ -199,9 +194,9 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor cursor = getContentResolver().query(uri, null, null, null, null);
         if (cursor == null) {
-            Toast.makeText(MainActivity.this, "Something Went Wrong.", Toast.LENGTH_LONG);
+            Toast.makeText(MainActivity.this, "Something Went Wrong.", Toast.LENGTH_LONG).show();
         } else if (!cursor.moveToFirst()) {
-            Toast.makeText(MainActivity.this, "No Music Found on SD Card.", Toast.LENGTH_LONG);
+            Toast.makeText(MainActivity.this, "No Music Found on SD Card.", Toast.LENGTH_LONG).show();
         } else if (cursor != null && cursor.moveToNext()) {
 
             int title = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
@@ -222,13 +217,13 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
                 Long durationA = cursor.getLong(duration);
                 int isMusicA = cursor.getInt(isMusic);
                 int dateA = cursor.getInt(date);
-                String albumArtString="";
+                String albumArtString = "";
                 try {
                     albumArtString = cursor.getString(albumArt);
-                }catch (Exception e){
+                } catch (Exception e) {
 
                 }
-                if (isMusicA != 0){
+                if (isMusicA != 0) {
                     audios.add(new MAudio(albumA, titleA, artistA, durationA, trackA, dateA, fileA, albumArtString));
                 }
 
@@ -240,9 +235,9 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
         Uri uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
         Cursor cursor = getContentResolver().query(uri, null, null, null, null);
         if (cursor == null) {
-            Toast.makeText(MainActivity.this, "Something Went Wrong.", Toast.LENGTH_LONG);
+            Toast.makeText(MainActivity.this, "Something Went Wrong.", Toast.LENGTH_LONG).show();
         } else if (!cursor.moveToFirst()) {
-            Toast.makeText(MainActivity.this, "No Music Found on SD Card.", Toast.LENGTH_LONG);
+            Toast.makeText(MainActivity.this, "No Music Found on SD Card.", Toast.LENGTH_LONG).show();
         } else {
             int title = cursor.getColumnIndex(MediaStore.Video.Media.TITLE);
             int data = cursor.getColumnIndex(MediaStore.Video.Media.DATA);
@@ -270,39 +265,40 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
     }
 
     public void androidRuntimePermission() {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
-                if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                        AlertDialog.Builder alert_builder = new AlertDialog.Builder(MainActivity.this);
+                        alert_builder.setMessage("External Storage Permission is Required.");
+                        alert_builder.setTitle("Please Grant Permission.");
+                        alert_builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 7);
+                            }
+                        });
 
-                    AlertDialog.Builder alert_builder = new AlertDialog.Builder(MainActivity.this);
-                    alert_builder.setMessage("External Storage Permission is Required.");
-                    alert_builder.setTitle("Please Grant Permission.");
-                    alert_builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
+                        alert_builder.setNeutralButton("Cancel", null);
 
-                            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 7);
-                        }
-                    });
+                        AlertDialog dialog = alert_builder.create();
 
-                    alert_builder.setNeutralButton("Cancel", null);
+                        dialog.show();
 
-                    AlertDialog dialog = alert_builder.create();
-
-                    dialog.show();
-
+                    } else {
+                        ActivityCompat.requestPermissions(
+                                MainActivity.this,
+                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 7);
+                    }
                 } else {
-
-                    ActivityCompat.requestPermissions(
-                            MainActivity.this,
-                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 7);
+                    Toast.makeText(this, "Error Occurred", Toast.LENGTH_SHORT).show();
                 }
-            } else {
-
             }
+        }catch (Exception e){
+            Toast.makeText(this, "Error Occurred : "+e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -320,22 +316,12 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
                 }
             }
         }
-    }
 
-    public View getViewByPosition(int pos, ListView listView) {
-        final int firstListItemPosition = listView.getFirstVisiblePosition();
-        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
-
-        if (pos < firstListItemPosition || pos > lastListItemPosition) {
-            return listView.getAdapter().getView(pos, null, listView);
-        } else {
-            final int childIndex = pos - firstListItemPosition;
-            return listView.getChildAt(childIndex);
-        }
     }
 
     @Override
     public void onAppGotoForeground() {
+
     }
 
     @Override
@@ -352,7 +338,6 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
     @Override
     protected void onResume() {
         super.onResume();
-
         Menu menu = navigationView.getMenu();
         MenuItem menuItem = menu.findItem(R.id.musicVideo);
         if (menuItemSwitch) {
@@ -360,11 +345,13 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
             menuItem.setTitle("Videos");
             sliderLayout.setVisibility(View.VISIBLE);
             autoSliderText.setVisibility(View.VISIBLE);
+            bar.setTitle("Videos");
         } else if (!menuItemSwitch) {
             menuItem.setIcon(R.drawable.ic_audiotrack_black_24dp);
             menuItem.setTitle("Music");
             sliderLayout.setVisibility(View.GONE);
             autoSliderText.setVisibility(View.GONE);
+            bar.setTitle("Music");
         }
     }
 
@@ -373,4 +360,5 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
         super.onRestoreInstanceState(savedInstanceState, persistentState);
         menuItemSwitch = savedInstanceState.getBoolean("switch");
     }
+
 }

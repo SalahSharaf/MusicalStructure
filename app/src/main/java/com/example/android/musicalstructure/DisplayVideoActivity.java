@@ -9,6 +9,7 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Handler;
 import android.os.PersistableBundle;
+import android.support.v4.app.NavUtils;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -27,6 +28,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
@@ -78,7 +80,7 @@ public class DisplayVideoActivity extends AppCompatActivity implements View.OnCl
         RelativeLayout bigwrraper = findViewById(R.id.bigWrraperTouchable);
         bigwrraper.setOnClickListener(this);
         controlGroup = findViewById(R.id.videoControlGroup);
-        controlGroup.postDelayed(controlGroupChecker, 4000);
+       // controlGroup.postDelayed(controlGroupChecker, 4000);
         videos = MainActivity.videos;
         workingVideo = videos.get(position);
         videoSurface = findViewById(R.id.videoView);
@@ -137,7 +139,6 @@ public class DisplayVideoActivity extends AppCompatActivity implements View.OnCl
             }
 
         });
-
         playButton = findViewById(R.id.playButton);
         playButton.setSelected(true);
         playButton.setOnClickListener(new View.OnClickListener() {
@@ -228,7 +229,6 @@ public class DisplayVideoActivity extends AppCompatActivity implements View.OnCl
             drawerToggle.setDrawerIndicatorEnabled(true);
             drawerLayout.addDrawerListener(drawerToggle);
             drawerToggle.syncState();
-
             /////////////////////////////////////////////////////////////// updating
             final Handler handle = new Handler();
             Runnable run = new Runnable() {
@@ -253,8 +253,8 @@ public class DisplayVideoActivity extends AppCompatActivity implements View.OnCl
     private Runnable controlGroupChecker = new Runnable() {
         @Override
         public void run() {
-                controlGroup.postDelayed(this, 4000);
-                controlGroup.startAnimation(fadeOut);
+            controlGroup.postDelayed(this, 4000);
+            controlGroup.startAnimation(fadeOut);
         }
     };
 
@@ -334,8 +334,11 @@ public class DisplayVideoActivity extends AppCompatActivity implements View.OnCl
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.actionbar_menu_toggle, menu);
         MenuItem item = menu.findItem(R.id.action_toggle);
+        MenuItem item2 = menu.findItem(R.id.Home_toggle);
         item.setActionView(R.layout.toggle_button_layout);
+        item2.setActionView(R.layout.toggle_home_layout);
         final ImageButton button = item.getActionView().findViewById(R.id.toggleButton);
+        final ImageButton button2 = item2.getActionView().findViewById(R.id.toggleHome);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -357,25 +360,20 @@ public class DisplayVideoActivity extends AppCompatActivity implements View.OnCl
                 popupMenu.show();
             }
         });
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent mainActivityIntent = new Intent(getBaseContext(), MainActivity.class);
+                startActivity(mainActivityIntent);
+            }
+        });
         return true;
     }
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-    }
-
-    public View getViewByPosition(int pos, ListView listView) {
-        final int firstListItemPosition = listView.getFirstVisiblePosition();
-        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
-
-        if (pos < firstListItemPosition || pos > lastListItemPosition) {
-            return listView.getAdapter().getView(pos, null, listView);
-        } else {
-            final int childIndex = pos - firstListItemPosition;
-            return listView.getChildAt(childIndex);
-        }
+        Intent MainActivityIntent = new Intent(this, MainActivity.class);
+        startActivity(MainActivityIntent);
     }
 
     @Override

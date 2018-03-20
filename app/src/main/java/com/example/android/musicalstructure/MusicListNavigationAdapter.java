@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,7 +27,8 @@ import java.util.ArrayList;
  * Created by ALQasem on 13/03/2018.
  */
 
-public class MusicListNavigationAdapter extends ArrayAdapter<MAudio> implements View.OnClickListener, Runnable {
+public class MusicListNavigationAdapter extends ArrayAdapter<MAudio> implements View.OnClickListener {
+
     Context context;
     ArrayList<MAudio> audios;
     ImageButton playSongButton;
@@ -36,8 +38,6 @@ public class MusicListNavigationAdapter extends ArrayAdapter<MAudio> implements 
     public MusicListNavigationAdapter(@NonNull Context context, ArrayList<MAudio> audios) {
         super(context, 0, audios);
         this.audios = audios;
-        Thread thread = new Thread(this);
-        thread.start();
     }
 
     @Override
@@ -55,10 +55,10 @@ public class MusicListNavigationAdapter extends ArrayAdapter<MAudio> implements 
         // setting buttons click listeners
         cardView = convertView.findViewById(R.id.layout2_card_view);
         cardView.setOnClickListener(this);
-        cardView.setTag(R.id.position, position);
+        cardView.setTag(position);
         playSongButton = convertView.findViewById(R.id.layout2_song_play_button);
         playSongButton.setOnClickListener(this);
-        playSongButton.setTag(R.id.position, position);
+        playSongButton.setTag(position);
         if (MusicDisplayActivity.position != position && !MusicDisplayActivity.mediaPlayer.isPlaying()) {
             playSongButton.setSelected(false);
         } else if (MusicDisplayActivity.position == position && MusicDisplayActivity.mediaPlayer.isPlaying()) {
@@ -68,7 +68,28 @@ public class MusicListNavigationAdapter extends ArrayAdapter<MAudio> implements 
         }
         songOptions = convertView.findViewById(R.id.layout2_options_button);
         songOptions.setOnClickListener(this);
-        //return customized view
+        cardView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (MusicDisplayActivity.position == (int) playSongButton.getTag()) {
+                    cardView.setBackgroundResource(R.color.colorPrimaryLight);
+                } else {
+                    cardView.setBackgroundResource(R.color.colorPrimary);
+                }
+                cardView.postDelayed(this, 100);
+            }
+        },100);
+        playSongButton.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (MusicDisplayActivity.position == (int) playSongButton.getTag() && MusicDisplayActivity.mediaPlayer.isPlaying()) {
+                    playSongButton.setSelected(true);
+                } else {
+                    playSongButton.setSelected(false);
+                }
+                playSongButton.postDelayed(this, 100);
+            }
+        },100);
         return convertView;
     }
 
@@ -76,17 +97,25 @@ public class MusicListNavigationAdapter extends ArrayAdapter<MAudio> implements 
     public void onClick(View v) {
         if (v.getId() == R.id.layout2_song_play_button) {
             ImageButton play = (ImageButton) v;
-            if (MusicDisplayActivity.position != (int) v.getTag(R.id.position)) {
-                int position = Integer.getInteger((v.getTag(R.id.position).toString()));
-                MusicDisplayActivity.position = position;
+            int position = (int) v.getTag();
+            if (MusicDisplayActivity.position != position) {
                 play.setSelected(true);
                 CardView cardView = (CardView) v.getParent().getParent();
                 cardView.setBackgroundResource(R.color.colorPrimaryLight);
-                context.startActivity(new Intent(context, MusicDisplayActivity.class));
-            } else if (MusicDisplayActivity.position == (int) v.getTag(R.id.position) && MusicDisplayActivity.mediaPlayer.isPlaying()) {
+                MusicDisplayActivity.position = position;
+                MusicDisplayActivity.mediaPlayer.release();
+                MusicDisplayActivity.mediaPlayer = new MediaPlayer();
+                try {
+                    MusicDisplayActivity.mediaPlayer.setDataSource(audios.get(position).getData().getAbsolutePath());
+                    MusicDisplayActivity.mediaPlayer.prepare();
+                } catch (IOException e) {
+                    Toast.makeText(context, "Couldn't Play Music", Toast.LENGTH_SHORT).show();
+                }
+                MusicDisplayActivity.mediaPlayer.start();
+            } else if (MusicDisplayActivity.position == position && MusicDisplayActivity.mediaPlayer.isPlaying()) {
                 MusicDisplayActivity.mediaPlayer.pause();
                 play.setSelected(false);
-            } else if (MusicDisplayActivity.position == (int) v.getTag(R.id.position) && !MusicDisplayActivity.mediaPlayer.isPlaying()) {
+            } else if (MusicDisplayActivity.position == position && !MusicDisplayActivity.mediaPlayer.isPlaying()) {
                 MusicDisplayActivity.mediaPlayer.start();
                 play.setSelected(true);
             }
@@ -98,9 +127,9 @@ public class MusicListNavigationAdapter extends ArrayAdapter<MAudio> implements 
                 popup.setGravity(Gravity.CENTER_HORIZONTAL);
             }
             popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-
                     if (item.getItemId() == R.id.song_menu_play) {
 
                     } else if (item.getItemId() == R.id.song_menu_delete) {
@@ -114,36 +143,21 @@ public class MusicListNavigationAdapter extends ArrayAdapter<MAudio> implements 
             popup.show();
 
         } else if (v.getId() == R.id.song_cover) {
-            if (MusicDisplayActivity.position != (int) v.getTag(R.id.position)) {
+            int position = (int) v.getTag();
+            if (MusicDisplayActivity.position != position) {
                 CardView cardView = (CardView) v;
                 cardView.setBackgroundResource(R.color.colorPrimaryLight);
-                int position = (int) v.getTag(R.id.position);
                 MusicDisplayActivity.position = position;
-                MusicDisplayActivity.mediaPlayer = new MediaPlayer();
                 MusicDisplayActivity.mediaPlayer.release();
+                MusicDisplayActivity.mediaPlayer = new MediaPlayer();
                 try {
                     MusicDisplayActivity.mediaPlayer.setDataSource(audios.get(position).getData().getAbsolutePath());
+                    MusicDisplayActivity.mediaPlayer.prepare();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Toast.makeText(context, "Couldn't Play Music", Toast.LENGTH_SHORT).show();
                 }
                 MusicDisplayActivity.mediaPlayer.start();
             }
         }
-    }
-
-    @Override
-    public void run() {
-        //android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-        if (Integer.getInteger(playSongButton.getTag(R.id.position).toString()) != MusicDisplayActivity.position) {
-            playSongButton.setSelected(false);
-        } else if (playSongButton.getTag(R.id.position) == Integer.getInteger(playSongButton.getTag(R.id.position).toString())) {
-            playSongButton.setSelected(true);
-        }
-        if (Integer.getInteger(cardView.getTag(R.id.position).toString()) != MusicDisplayActivity.position) {
-            cardView.setBackgroundResource(R.color.colorPrimary);
-        } else if (cardView.getTag(R.id.position) == Integer.getInteger(playSongButton.getTag(R.id.position).toString())) {
-            cardView.setBackgroundResource(R.color.colorPrimaryLight);
-        }
-
     }
 }

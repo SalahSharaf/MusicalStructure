@@ -85,22 +85,7 @@ public class VideosAdapter extends ArrayAdapter<MVideo> implements View.OnClickL
                 e.setSelected(false);
             }
             playSongButton.setSelected(!playSongButton.isSelected());
-
-
-            /*
-            if (DisplayVideoActivity.songPlaying && DisplayVideoActivity.position == position) {
-                DisplayVideoActivity.songPlaying = false;
-            } else if (!DisplayVideoActivity.songPlaying) {
-                DisplayVideoActivity.songPlaying = true;
-                Toast.makeText(context, videos.get(position).getTitle(), Toast.LENGTH_SHORT).show();
-            } else if (DisplayVideoActivity.songPlaying && DisplayVideoActivity.position != position) {
-                DisplayVideoActivity.songPlaying = true;
-                DisplayVideoActivity.lastPosition = DisplayVideoActivity.position;
-                DisplayVideoActivity.position = position;
-            }
-            */
         }
-
         if (v.getId() == R.id.song_options) {
             ImageButton songOptions = (ImageButton) v;
             PopupMenu popup = new PopupMenu(context, songOptions);
@@ -111,30 +96,24 @@ public class VideosAdapter extends ArrayAdapter<MVideo> implements View.OnClickL
             popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-
                     if (item.getItemId() == R.id.song_menu_play) {
-
-
                     } else if (item.getItemId() == R.id.song_menu_delete) {
-
                     } else if (item.getItemId() == R.id.song_menu_addToPlayList) {
-
                     }
                     return true;
                 }
             });
             popup.show();
         }
-
         if (v.getId() == R.id.song_cover) {
             View parentRow = (View) v.getParent();
             ListView listView = (ListView) parentRow.getParent().getParent().getParent();
             int position = listView.getPositionForView(parentRow);
-            Intent intent = new Intent(context, DisplayVideoActivity.class);
             DisplayVideoActivity.lastPosition = DisplayVideoActivity.position;
             DisplayVideoActivity.position = position;
             DisplayVideoActivity.workingVideo=videos.get(position);
-            context.startActivity(intent);
+            Intent DisplayVideoIntent = new Intent(context, DisplayVideoActivity.class);
+            context.startActivity(DisplayVideoIntent);
         }
     }
 

@@ -34,9 +34,9 @@
                 android:id="@+id/seekBar"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:padding="10dp"
                 android:background="@color/transparent"
-                android:thumbTint="@color/colorAccent"/>
+                android:padding="10dp"
+                android:thumbTint="@color/colorAccent" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -108,15 +108,15 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/colorPrimary">
+        android:background="@color/colorPrimaryLight">
 
-            <ListView
-                android:id="@+id/videosListView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="10dp">
+        <ListView
+            android:id="@+id/videosListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp">
 
-            </ListView>
+        </ListView>
 
     </android.support.design.widget.NavigationView>
 

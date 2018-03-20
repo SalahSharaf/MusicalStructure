@@ -38,7 +38,7 @@
                 android:paddingLeft="10dp"
                 android:text="video name"
                 android:textColor="@color/colorAccent"
-                android:textSize="12dp" />
+                android:textSize="12sp" />
 
             <ImageButton
                 android:id="@+id/layout2_song_play_button"

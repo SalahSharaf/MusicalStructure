@@ -2,12 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <ImageButton
         android:id="@+id/toggleButton"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:layout_centerInParent="true"
         android:background="@drawable/ic_more_vert_black_24dp"
         android:scaleType="centerCrop"
-        android:text=""
-        android:layout_centerInParent="true"/>
+        android:text="" />
+
 </RelativeLayout>

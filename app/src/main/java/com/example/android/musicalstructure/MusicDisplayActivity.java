@@ -17,7 +17,10 @@ import android.os.Handler;
 import android.os.PersistableBundle;
 import android.provider.MediaStore;
 import android.support.annotation.AnimatorRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.NavUtils;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -26,6 +29,7 @@ import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
@@ -35,6 +39,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -47,12 +52,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 import static com.example.android.musicalstructure.DisplayVideoActivity.videoMedia;
 
 public class MusicDisplayActivity extends AppCompatActivity implements AppVisibilityDetector.AppVisibilityCallback {
-    //ImageView circularImage, coverImage;
-
     ImageButton play, repeat, shuffle, seekforward, seekbackward;
+    ImageView coverImage;
     TextView text;
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle drawerToggle;
@@ -62,7 +68,6 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
     public static MediaPlayer mediaPlayer;
     SeekBar seekBar;
     int currentMusicPosition;
-    //RotateAnimation rotateAnimation;
     MusicListNavigationAdapter adapter;
     boolean selected[] = new boolean[3];
 
@@ -103,18 +108,16 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
 
         } else if (result == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
-            Toast.makeText(this, "Error Occurred", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(this, this.getClass()));
+
         }
-        // circularImage = findViewById(R.id.music_activity_circularImage);
-        // coverImage = findViewById(R.id.music_activity_image);
+        //circularImage = findViewById(R.id.music_activity_circularImage);
+        coverImage = findViewById(R.id.music_activity_image);
         play = findViewById(R.id.playButton);
         repeat = findViewById(R.id.repeat);
         shuffle = findViewById(R.id.shuffle);
         seekbackward = findViewById(R.id.seekBackwards);
         seekforward = findViewById(R.id.seekTowards);
         ////////////////////////
-        // circularRotatingAnimation(6000);
         text = new TextView(this);
         text.setTextColor(getResources().getColor(R.color.colorAccent));
         text.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
@@ -129,6 +132,14 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
         drawerToggle.setDrawerIndicatorEnabled(true);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
+        NavigationView navigationView = findViewById(R.id.musicActivityNavigation);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                return true;
+            }
+        });
+
         //////////////////////////////////////////////////////////////
         listView = findViewById(R.id.music_navigation_list);
         listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -167,6 +178,7 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
         Runnable run = new Runnable() {
             @Override
             public void run() {
+                text.setText(mAudios.get(position).getTitle());
                 if (mediaPlayer.isPlaying()) {
                     play.setSelected(true);
                 } else if (!mediaPlayer.isPlaying()) {
@@ -177,34 +189,66 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
             }
         };
         handle.post(run);
-        ///////////////////////////////////////////////////////////////
-        Bitmap image = BitmapFactory.decodeFile(mAudios.get(position).getAlbumArtPath());
-        if (image != null) {
-            //    circularImage.setImageBitmap(image);
-            //    coverImage.setImageBitmap(image);
-        } else if (image == null) {
-            //   circularImage.setImageResource(R.drawable.a3);
-            //   coverImage.setImageResource(R.drawable.a2);
-        }
-        ///////////////////////////////////////////////////////////////
+        final Handler handle2 = new Handler();
+        Runnable run2 = new Runnable() {
+            @Override
+            public void run() {
+                Bitmap image = BitmapFactory.decodeFile(mAudios.get(position).getAlbumArtPath());
+                if (image != null) {
+                    coverImage.setImageBitmap(image);
+                } else if (image == null) {
+                    coverImage.setImageResource(R.drawable.a2);
+                }
+                handle2.postDelayed(this, 1000);
+            }
+        };
+        handle2.post(run2);
+        ///////////////////////////////////////////////////
         noRepeat();
-    }
-
-    //  private void circularRotatingAnimation(int duration) {
-    //     rotateAnimation = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-    //     rotateAnimation.setDuration(duration);
-    //     rotateAnimation.setRepeatCount(Animation.INFINITE);
-    //     circularImage.setAnimation(rotateAnimation);
-    //  }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return drawerToggle.onOptionsItemSelected(item) | super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onAppGotoForeground() {
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.actionbar_menu_toggle, menu);
+        MenuItem item = menu.findItem(R.id.action_toggle);
+        MenuItem item2 = menu.findItem(R.id.Home_toggle);
+        item.setActionView(R.layout.toggle_button_layout);
+        item2.setActionView(R.layout.toggle_home_layout);
+        final ImageButton button = item.getActionView().findViewById(R.id.toggleButton);
+        final ImageButton button2 = item2.getActionView().findViewById(R.id.toggleHome);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu popupMenu = new PopupMenu(getBaseContext(), button);
+                popupMenu.getMenuInflater().inflate(R.menu.song_popup_menu, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        if (item.getItemId() == R.id.song_menu_play) {
+
+                        } else if (item.getItemId() == R.id.song_menu_delete) {
+
+                        } else if (item.getItemId() == R.id.song_menu_addToPlayList) {
+
+                        }
+                        return true;
+                    }
+                });
+                popupMenu.show();
+            }
+        });
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent mainActivityIntent = new Intent(getBaseContext(), MainActivity.class);
+                startActivity(mainActivityIntent);
+            }
+        });
+        return true;
     }
 
     @Override
@@ -212,33 +256,19 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
         Toast.makeText(this, "background", Toast.LENGTH_SHORT).show();
     }
 
-    public void listRepeatMode(View view) {
-        initializePopUpWindow(view);
-    }
-
-    public void listAsynce(View view) {
-        ArrayList<MAudio> audios = getAllMediaMp3Files();
-        adapter = new MusicListNavigationAdapter(this, audios);
-        listView.setAdapter(adapter);
-        listView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-        Toast.makeText(this, "List synced", Toast.LENGTH_SHORT).show();
-    }
-
-    public void listShuffle(View view) {
-
-    }
-
     public void play(View view) {
         if (mediaPlayer.isPlaying()) {
             play.setSelected(false);
             mediaPlayer.pause();
-            //  circularImage.clearAnimation();
         } else if (!mediaPlayer.isPlaying()) {
             play.setSelected(true);
             mediaPlayer.start();
-            //   circularImage.setAnimation(rotateAnimation);
-            //    circularImage.animate();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return drawerToggle.onOptionsItemSelected(item)|super.onOptionsItemSelected(item);
     }
 
     public void seekBack(View view) {
@@ -327,7 +357,7 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
                 if (position >= mAudios.size()) {
                     position = 0;
                 } else if (position != (mAudios.size() - 1)) {
-                    position ++;
+                    position++;
                     try {
                         mp.release();
                         mp.setDataSource(mAudios.get(position).getData().getAbsolutePath());
@@ -359,51 +389,14 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
     protected void onResume() {
         super.onResume();
         mediaPlayer.seekTo(currentMusicPosition);
+        seekBar.setProgress(currentMusicPosition);
     }
 
-    public ArrayList<MAudio> getAllMediaMp3Files() {
-        ArrayList<MAudio> audios = new ArrayList<>();
-        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-        if (cursor == null) {
-            Toast.makeText(MusicDisplayActivity.this, "Error Occurred.", Toast.LENGTH_LONG).show();
-        } else if (!cursor.moveToFirst()) {
-            Toast.makeText(MusicDisplayActivity.this, "No Music Found on SD Card.", Toast.LENGTH_LONG).show();
-        } else if (cursor != null && cursor.moveToNext()) {
-
-            int title = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-            int data = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
-            int date = cursor.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED);
-            int track = cursor.getColumnIndex(MediaStore.Audio.Media.TRACK);
-            int artist = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-            int isMusic = cursor.getColumnIndex(MediaStore.Audio.Media.IS_MUSIC);
-            int duration = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
-            int album = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
-            int albumArt = cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART);
-            do {
-                File fileA = new File(cursor.getString(data));
-                String artistA = cursor.getString(artist);
-                String albumA = cursor.getString(album);
-                String trackA = cursor.getString(track);
-                String titleA = cursor.getString(title);
-                Long durationA = cursor.getLong(duration);
-                int isMusicA = cursor.getInt(isMusic);
-                int dateA = cursor.getInt(date);
-                String albumArtString = "";
-                try {
-                    albumArtString = cursor.getString(albumArt);
-                } catch (Exception e) {
-
-                }
-                if (isMusicA != 0) {
-                    audios.add(new MAudio(albumA, titleA, artistA, durationA, trackA, dateA, fileA, albumArtString));
-                }
-
-            } while (cursor.moveToNext());
-        }
-        return audios;
+    @Override
+    public void onBackPressed() {
+        Intent mainActivityIntent = new Intent(this, MainActivity.class);
+        startActivity(mainActivityIntent);
     }
+
+
 }
-
-
-

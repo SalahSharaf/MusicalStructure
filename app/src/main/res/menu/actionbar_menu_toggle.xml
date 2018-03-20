@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <item android:id="@+id/action_toggle"
+    <item
+        android:id="@+id/Home_toggle"
+        android:actionLayout="@layout/toggle_home_layout"
         android:title=""
-        app:showAsAction="always"
-        android:actionLayout="@layout/toggle_button_layout">
-    </item>
+        app:showAsAction="always"></item>
+    <item
+        android:id="@+id/action_toggle"
+        android:actionLayout="@layout/toggle_button_layout"
+        android:title=""
+        app:showAsAction="always"></item>
 </menu>

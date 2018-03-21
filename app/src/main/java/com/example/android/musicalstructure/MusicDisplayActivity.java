@@ -64,13 +64,12 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
     ActionBarDrawerToggle drawerToggle;
     ListView listView;
     ArrayList<MAudio> mAudios;
-    public static int position;
+    public static int position, lastPosition = -1;
     public static MediaPlayer mediaPlayer;
     SeekBar seekBar;
     int currentMusicPosition;
     MusicListNavigationAdapter adapter;
     boolean selected[] = new boolean[3];
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -268,7 +267,7 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return drawerToggle.onOptionsItemSelected(item)|super.onOptionsItemSelected(item);
+        return drawerToggle.onOptionsItemSelected(item) | super.onOptionsItemSelected(item);
     }
 
     public void seekBack(View view) {
@@ -305,16 +304,16 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
         PopupWindow menu = new PopupWindow(menuView, width, height, focusable);
         menu.showAtLocation(view, Gravity.CENTER_HORIZONTAL, (int) view.getX(), (int) view.getY());
         RadioGroup group = menuView.findViewById(R.id.options_radio_group);
-        RadioButton btn1 = menuView.findViewById(R.id.pop_up_window_No_repeat);
+        RadioButton btn1 = menuView.findViewById(R.id.pop_up_window_repeat_one);
         btn1.setChecked(selected[0]);
-        RadioButton btn2 = menuView.findViewById(R.id.pop_up_window_No_repeat);
+        RadioButton btn2 = menuView.findViewById(R.id.pop_up_window_repeat_all);
         btn2.setChecked(selected[1]);
         RadioButton btn3 = menuView.findViewById(R.id.pop_up_window_No_repeat);
         btn3.setChecked(selected[2]);
         group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.pop_up_window_No_repeat) {
+                if (checkedId == R.id.pop_up_window_repeat_one) {
                     selected[0] = true;
                     selected[1] = false;
                     selected[2] = false;
@@ -326,7 +325,7 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
                     selected[2] = false;
                     Toast.makeText(MusicDisplayActivity.this, "Repeat All file", Toast.LENGTH_SHORT).show();
                     repeatAllFiles();
-                } else if (checkedId == R.id.pop_up_window_repeat_one) {
+                } else if (checkedId == R.id.pop_up_window_No_repeat) {
                     selected[0] = false;
                     selected[1] = false;
                     selected[2] = true;
@@ -342,6 +341,7 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
             @Override
             public void onCompletion(MediaPlayer mp) {
                 mediaPlayer.release();
+                mediaPlayer = null;
             }
         });
     }

@@ -34,6 +34,8 @@ public class MusicListNavigationAdapter extends ArrayAdapter<MAudio> implements 
     ImageButton playSongButton;
     ImageButton songOptions;
     CardView cardView;
+    Handler handler;
+    Runnable run;
 
     public MusicListNavigationAdapter(@NonNull Context context, ArrayList<MAudio> audios) {
         super(context, 0, audios);
@@ -68,28 +70,6 @@ public class MusicListNavigationAdapter extends ArrayAdapter<MAudio> implements 
         }
         songOptions = convertView.findViewById(R.id.layout2_options_button);
         songOptions.setOnClickListener(this);
-        cardView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (MusicDisplayActivity.position == (int) playSongButton.getTag()) {
-                    cardView.setBackgroundResource(R.color.colorPrimaryLight);
-                } else {
-                    cardView.setBackgroundResource(R.color.colorPrimary);
-                }
-                cardView.postDelayed(this, 100);
-            }
-        },100);
-        playSongButton.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (MusicDisplayActivity.position == (int) playSongButton.getTag() && MusicDisplayActivity.mediaPlayer.isPlaying()) {
-                    playSongButton.setSelected(true);
-                } else {
-                    playSongButton.setSelected(false);
-                }
-                playSongButton.postDelayed(this, 100);
-            }
-        },100);
         return convertView;
     }
 
@@ -121,7 +101,7 @@ public class MusicListNavigationAdapter extends ArrayAdapter<MAudio> implements 
             }
         } else if (v.getId() == R.id.layout2_options_button) {
             ImageButton songOptions = (ImageButton) v;
-            PopupMenu popup = new PopupMenu(context, songOptions);
+            PopupMenu popup = new PopupMenu(getContext(), songOptions);
             popup.getMenuInflater().inflate(R.menu.song_popup_menu, popup.getMenu());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 popup.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -142,11 +122,12 @@ public class MusicListNavigationAdapter extends ArrayAdapter<MAudio> implements 
             });
             popup.show();
 
-        } else if (v.getId() == R.id.song_cover) {
+        } else if (v.getId() == R.id.layout2_card_view) {
             int position = (int) v.getTag();
             if (MusicDisplayActivity.position != position) {
                 CardView cardView = (CardView) v;
                 cardView.setBackgroundResource(R.color.colorPrimaryLight);
+                MusicDisplayActivity.lastPosition = position;
                 MusicDisplayActivity.position = position;
                 MusicDisplayActivity.mediaPlayer.release();
                 MusicDisplayActivity.mediaPlayer = new MediaPlayer();
@@ -160,4 +141,5 @@ public class MusicListNavigationAdapter extends ArrayAdapter<MAudio> implements 
             }
         }
     }
+
 }

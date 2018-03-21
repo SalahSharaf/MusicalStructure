@@ -13,8 +13,10 @@ import android.os.Handler;
 import android.os.PersistableBundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -34,6 +36,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements AppVisibilityDetector.AppVisibilityCallback {
 
+    private static final int READ_STORAGE = 7;
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle actionBarDrawerToggle;
     public static ArrayList<MVideo> videos;
@@ -62,8 +65,6 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
         gridView = findViewById(R.id.gridViewSongsList);
         gridView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         androidRuntimePermission();
-        getAllMediaMp4Files();
-        getAllMediaMp3Files();
         videosAdapter = new VideosAdapter(this, videos);
         musicAdapter = new MusicAdapter(this, audios);
         gridView.setAdapter(videosAdapter);
@@ -149,13 +150,17 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
             int i = 0;
 
             public void run() {
-                sliderLayout.setImageBitmap(videos.get(i).getThumbonial());
-                autoSliderText.setText(videos.get(i).getTitle());
-                i++;
-                if (i > videos.size() - 1) {
-                    i = 0;
+                try {
+                    sliderLayout.setImageBitmap(videos.get(i).getThumbonial());
+                    autoSliderText.setText(videos.get(i).getTitle());
+                    i++;
+                    if (i > videos.size() - 1) {
+                        i = 0;
+                    }
+                }catch (Exception e){
+
                 }
-                handler2.postDelayed(this, 4000);  //for interval...
+                    handler2.postDelayed(this, 4000);  //for interval...
             }
         };
         handler2.postDelayed(runnable, 0); //for initial delay..
@@ -176,7 +181,6 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
 
     private void goToActivityInformation() {
         Toast.makeText(this, "Information", Toast.LENGTH_SHORT).show();
-
     }
 
     private void goToActivityPreferences() {
@@ -190,7 +194,6 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
     }
 
     public void getAllMediaMp3Files() {
-
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor cursor = getContentResolver().query(uri, null, null, null, null);
         if (cursor == null) {
@@ -237,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
         if (cursor == null) {
             Toast.makeText(MainActivity.this, "Something Went Wrong.", Toast.LENGTH_LONG).show();
         } else if (!cursor.moveToFirst()) {
-            Toast.makeText(MainActivity.this, "No Music Found on SD Card.", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "No videos Found on SD Card.", Toast.LENGTH_LONG).show();
         } else {
             int title = cursor.getColumnIndex(MediaStore.Video.Media.TITLE);
             int data = cursor.getColumnIndex(MediaStore.Video.Media.DATA);
@@ -265,40 +268,38 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
     }
 
     public void androidRuntimePermission() {
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-                if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-                    if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
-                        AlertDialog.Builder alert_builder = new AlertDialog.Builder(MainActivity.this);
-                        alert_builder.setMessage("External Storage Permission is Required.");
-                        alert_builder.setTitle("Please Grant Permission.");
-                        alert_builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 7);
-                            }
-                        });
+                if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
-                        alert_builder.setNeutralButton("Cancel", null);
+                    AlertDialog.Builder alert_builder = new AlertDialog.Builder(MainActivity.this);
+                    alert_builder.setMessage("External Storage Permission is Required.");
+                    alert_builder.setTitle("Please Grant Permission.");
+                    alert_builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
-                        AlertDialog dialog = alert_builder.create();
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_STORAGE);
+                        }
+                    });
 
-                        dialog.show();
+                    alert_builder.setNeutralButton("Cancel", null);
 
-                    } else {
-                        ActivityCompat.requestPermissions(
-                                MainActivity.this,
-                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 7);
-                    }
+                    AlertDialog dialog = alert_builder.create();
+
+                    dialog.show();
+
                 } else {
-                    Toast.makeText(this, "Error Occurred", Toast.LENGTH_SHORT).show();
+                    ActivityCompat.requestPermissions(
+                            MainActivity.this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_STORAGE);
                 }
+            } else {
+                getAllMediaMp4Files();
+                getAllMediaMp3Files();
             }
-        }catch (Exception e){
-            Toast.makeText(this, "Error Occurred : "+e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -307,16 +308,27 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
 
         switch (requestCode) {
 
-            case 7: {
+            case READ_STORAGE: {
 
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
+                    Toast.makeText(this, "Permissions granted", Toast.LENGTH_SHORT).show();
+                    getAllMediaMp4Files();
+                    getAllMediaMp3Files();
                 } else {
-
+                    AlertDialog.Builder alert_builder = new AlertDialog.Builder(MainActivity.this);
+                    alert_builder.setMessage("External Storage Permission is Required.\nto access all media files music and videos");
+                    alert_builder.setTitle("Please Grant Permission.");
+                    alert_builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_STORAGE);
+                        }
+                    });
+                    alert_builder.setNeutralButton("Cancel", null);
+                    AlertDialog dialog = alert_builder.create();
+                    dialog.show();
                 }
             }
         }
-
     }
 
     @Override

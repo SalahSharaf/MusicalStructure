@@ -1,6 +1,8 @@
 package com.example.android.musicalstructure;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -85,19 +87,19 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
                             getAllMediaMp4Files();
                             gridView.setAdapter(videosAdapter);
                             Toast.makeText(getBaseContext(), "Videos", Toast.LENGTH_SHORT).show();
-                            item.setIcon(R.drawable.ic_video_library_black_24dp);
+                            item.setIcon(R.drawable.ic_audiotrack_black_24dp);
                             sliderLayout.setVisibility(View.VISIBLE);
                             autoSliderText.setVisibility(View.VISIBLE);
-                            item.setTitle("Videos");
+                            item.setTitle("Music");
                             bar.setTitle("Videos");
                         } else if (!menuItemSwitch) {
                             getAllMediaMp3Files();
                             gridView.setAdapter(musicAdapter);
                             Toast.makeText(getBaseContext(), "Music", Toast.LENGTH_SHORT).show();
-                            item.setIcon(R.drawable.ic_audiotrack_black_24dp);
+                            item.setIcon(R.drawable.ic_video_library_black_24dp);
                             sliderLayout.setVisibility(View.GONE);
                             autoSliderText.setVisibility(View.GONE);
-                            item.setTitle("Music");
+                            item.setTitle("Videos");
                             bar.setTitle("Music");
                         }
                         break;
@@ -274,26 +276,26 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
                 if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    if(!MainActivity.this.isFinishing()) {
+                        AlertDialog.Builder alert_builder = new AlertDialog.Builder(this);
+                        alert_builder.setMessage("External Storage Permission is Required.");
+                        alert_builder.setTitle("Please Grant Permission.");
+                        alert_builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
-                    AlertDialog.Builder alert_builder = new AlertDialog.Builder(MainActivity.this);
-                    alert_builder.setMessage("External Storage Permission is Required.");
-                    alert_builder.setTitle("Please Grant Permission.");
-                    alert_builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_STORAGE);
+                            }
+                        });
 
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_STORAGE);
-                        }
-                    });
+                        alert_builder.setNeutralButton("Cancel", null);
 
-                    alert_builder.setNeutralButton("Cancel", null);
+                        AlertDialog dialog = alert_builder.create();
 
-                    AlertDialog dialog = alert_builder.create();
-
-                    dialog.show();
+                        dialog.show();
+                    }
 
                 } else {
-                    ActivityCompat.requestPermissions(
-                            MainActivity.this,
+                    requestPermissions(
                             new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_STORAGE);
                 }
             } else {
@@ -315,17 +317,20 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
                     getAllMediaMp4Files();
                     getAllMediaMp3Files();
                 } else {
-                    AlertDialog.Builder alert_builder = new AlertDialog.Builder(MainActivity.this);
-                    alert_builder.setMessage("External Storage Permission is Required.\nto access all media files music and videos");
-                    alert_builder.setTitle("Please Grant Permission.");
-                    alert_builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_STORAGE);
-                        }
-                    });
-                    alert_builder.setNeutralButton("Cancel", null);
-                    AlertDialog dialog = alert_builder.create();
-                    dialog.show();
+                    if(!MainActivity.this.isFinishing()) {
+                        AlertDialog.Builder alert_builder = new AlertDialog.Builder(getApplicationContext());
+                        alert_builder.setMessage("External Storage Permission is Required.\nto access all media files music and videos");
+                        alert_builder.setTitle("Please Grant Permission.");
+                        alert_builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_STORAGE);
+                            }
+                        });
+                        alert_builder.setNeutralButton("Cancel", null);
+                        AlertDialog dialog = alert_builder.create();
+                        dialog.show();
+
+                    }
                 }
             }
         }
@@ -353,17 +358,21 @@ public class MainActivity extends AppCompatActivity implements AppVisibilityDete
         Menu menu = navigationView.getMenu();
         MenuItem menuItem = menu.findItem(R.id.musicVideo);
         if (menuItemSwitch) {
-            menuItem.setIcon(R.drawable.ic_video_library_black_24dp);
-            menuItem.setTitle("Videos");
+            menuItem.setIcon(R.drawable.ic_audiotrack_black_24dp);
+            menuItem.setTitle("Music");
             sliderLayout.setVisibility(View.VISIBLE);
             autoSliderText.setVisibility(View.VISIBLE);
             bar.setTitle("Videos");
+            gridView.setAdapter(videosAdapter);
+
         } else if (!menuItemSwitch) {
-            menuItem.setIcon(R.drawable.ic_audiotrack_black_24dp);
-            menuItem.setTitle("Music");
+            menuItem.setIcon(R.drawable.ic_video_library_black_24dp);
+            menuItem.setTitle("Videos");
             sliderLayout.setVisibility(View.GONE);
             autoSliderText.setVisibility(View.GONE);
             bar.setTitle("Music");
+            gridView.setAdapter(musicAdapter);
+
         }
     }
 

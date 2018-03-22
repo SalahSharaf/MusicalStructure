@@ -59,20 +59,26 @@ public class DisplayVideoActivity extends AppCompatActivity implements View.OnCl
     public static int lastPosition = -10;
     TextView text;
     public static MediaPlayer videoMedia;
-    public SurfaceView videoSurface;
-    SurfaceHolder holder;
+    public static SurfaceView videoSurface;
+    public static SurfaceHolder holder;
     //RelativeLayout.LayoutParams paramsNotFullscreen;
-    LinearLayout controlGroup;
+     LinearLayout controlGroup;
     //RelativeLayout.LayoutParams paramsNotFullScreenControlGroup;
     Animation fadeIn, fadeOut;
     int currentDuration;
-    Handler handler;
+    Handler handler1, handler2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_video);
         ////////////////////////////////////////////////////////////////// setting up the video view
+        try {
+            MusicDisplayActivity.mediaPlayer.release();
+            MusicDisplayActivity.mediaPlayer = null;
+        } catch (Exception e) {
+
+        }
         fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in_animation);
         fadeIn.setDuration(2000);
         fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out_animation);
@@ -80,11 +86,13 @@ public class DisplayVideoActivity extends AppCompatActivity implements View.OnCl
         RelativeLayout bigwrraper = findViewById(R.id.bigWrraperTouchable);
         bigwrraper.setOnClickListener(this);
         controlGroup = findViewById(R.id.videoControlGroup);
-       // controlGroup.postDelayed(controlGroupChecker, 4000);
+        // controlGroup.postDelayed(controlGroupChecker, 4000);
         videos = MainActivity.videos;
         workingVideo = videos.get(position);
         videoSurface = findViewById(R.id.videoView);
         holder = videoSurface.getHolder();
+
+        videoMedia = new MediaPlayer();
         holder.addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
@@ -93,7 +101,6 @@ public class DisplayVideoActivity extends AppCompatActivity implements View.OnCl
 
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
             }
 
             @Override
@@ -101,16 +108,15 @@ public class DisplayVideoActivity extends AppCompatActivity implements View.OnCl
 
             }
         });
-        videoMedia = new MediaPlayer();
         try {
             videoMedia.setDataSource(workingVideo.getData().getAbsolutePath());
+            videoMedia.prepare();
         } catch (IOException e) {
             e.printStackTrace();
         }
         videoMedia.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
-                Toast.makeText(DisplayVideoActivity.this, "working", Toast.LENGTH_SHORT).show();
                 mp.start();
             }
         });
@@ -246,15 +252,20 @@ public class DisplayVideoActivity extends AppCompatActivity implements View.OnCl
             };
             handle.post(run);
         }
-        handler = new Handler();
-        handler.postDelayed(onEverySecond, 1000);
+        handler2 = new Handler();
+        handler2.postDelayed(onEverySecond, 100);
+        handler1 = new Handler();
+        handler1.postDelayed(controlGroupChecker, 100);
     }
 
     private Runnable controlGroupChecker = new Runnable() {
         @Override
         public void run() {
-            controlGroup.postDelayed(this, 4000);
-            controlGroup.startAnimation(fadeOut);
+            if (controlGroup.getVisibility() == View.INVISIBLE) {
+                controlGroup.postDelayed(this, 5000);
+                controlGroup.startAnimation(fadeOut);
+            }
+            handler1.postDelayed(this, 100);
         }
     };
 
@@ -307,6 +318,7 @@ public class DisplayVideoActivity extends AppCompatActivity implements View.OnCl
                     position += 1;
                     try {
                         videoMedia.setDataSource(workingVideo.getData().getAbsolutePath());
+                        videoMedia.prepare();
                         videoMedia.start();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -326,7 +338,7 @@ public class DisplayVideoActivity extends AppCompatActivity implements View.OnCl
         @Override
         public void run() {
             seekBar.setProgress(videoMedia.getCurrentPosition());
-            handler.postDelayed(this, 100);
+            handler2.postDelayed(this, 100);
         }
     };
 

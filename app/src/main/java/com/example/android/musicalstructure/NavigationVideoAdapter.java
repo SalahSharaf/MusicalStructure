@@ -1,12 +1,14 @@
 package com.example.android.musicalstructure;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -88,8 +90,28 @@ public class NavigationVideoAdapter extends ArrayAdapter<MVideo> implements View
             } else if (!DisplayVideoActivity.videoMedia.isPlaying() && DisplayVideoActivity.position != position) {
                 DisplayVideoActivity.lastPosition = DisplayVideoActivity.position;
                 DisplayVideoActivity.position = position;
+                DisplayVideoActivity.videoMedia.release();
+                DisplayVideoActivity.videoMedia = new MediaPlayer();
+                DisplayVideoActivity.holder = DisplayVideoActivity.videoSurface.getHolder();
+                DisplayVideoActivity.holder.addCallback(new SurfaceHolder.Callback() {
+                    @Override
+                    public void surfaceCreated(SurfaceHolder holder) {
+                        DisplayVideoActivity.videoMedia.setDisplay(holder);
+                    }
+
+                    @Override
+                    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+                    }
+
+                    @Override
+                    public void surfaceDestroyed(SurfaceHolder holder) {
+
+                    }
+                });
                 try {
                     DisplayVideoActivity.videoMedia.setDataSource(videos.get(position).getData().getAbsolutePath());
+                    DisplayVideoActivity.videoMedia.prepare();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -100,8 +122,28 @@ public class NavigationVideoAdapter extends ArrayAdapter<MVideo> implements View
             } else if (DisplayVideoActivity.videoMedia.isPlaying() && DisplayVideoActivity.position != position) {
                 DisplayVideoActivity.lastPosition = DisplayVideoActivity.position;
                 DisplayVideoActivity.position = position;
+                DisplayVideoActivity.videoMedia.release();
+                DisplayVideoActivity.videoMedia = new MediaPlayer();
+                DisplayVideoActivity.holder = DisplayVideoActivity.videoSurface.getHolder();
+                DisplayVideoActivity.holder.addCallback(new SurfaceHolder.Callback() {
+                    @Override
+                    public void surfaceCreated(SurfaceHolder holder) {
+                        DisplayVideoActivity.videoMedia.setDisplay(holder);
+                    }
+
+                    @Override
+                    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+                    }
+
+                    @Override
+                    public void surfaceDestroyed(SurfaceHolder holder) {
+
+                    }
+                });
                 try {
                     DisplayVideoActivity.videoMedia.setDataSource(videos.get(position).getData().getAbsolutePath());
+                    DisplayVideoActivity.videoMedia.prepare();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -143,8 +185,28 @@ public class NavigationVideoAdapter extends ArrayAdapter<MVideo> implements View
             if (DisplayVideoActivity.position != position && DisplayVideoActivity.lastPosition != -10) {
                 DisplayVideoActivity.lastPosition = DisplayVideoActivity.position;
                 DisplayVideoActivity.position = position;
+                DisplayVideoActivity.videoMedia.release();
+                DisplayVideoActivity.videoMedia = new MediaPlayer();
+                DisplayVideoActivity.holder = DisplayVideoActivity.videoSurface.getHolder();
+                DisplayVideoActivity.holder.addCallback(new SurfaceHolder.Callback() {
+                    @Override
+                    public void surfaceCreated(SurfaceHolder holder) {
+                        DisplayVideoActivity.videoMedia.setDisplay(holder);
+                    }
+
+                    @Override
+                    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+                        DisplayVideoActivity.videoMedia.setDisplay(holder);
+                    }
+
+                    @Override
+                    public void surfaceDestroyed(SurfaceHolder holder) {
+
+                    }
+                });
                 try {
                     DisplayVideoActivity.videoMedia.setDataSource(videos.get(position).getData().getAbsolutePath());
+                    DisplayVideoActivity.videoMedia.prepare();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

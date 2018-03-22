@@ -70,11 +70,18 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
     int currentMusicPosition;
     MusicListNavigationAdapter adapter;
     boolean selected[] = new boolean[3];
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_display);
         ////////////////////////initializations
+        try {
+            DisplayVideoActivity.videoMedia.release();
+            DisplayVideoActivity.videoMedia = null;
+        }catch (Exception e){
+
+        }
         mAudios = MainActivity.audios;
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -397,6 +404,5 @@ public class MusicDisplayActivity extends AppCompatActivity implements AppVisibi
         Intent mainActivityIntent = new Intent(this, MainActivity.class);
         startActivity(mainActivityIntent);
     }
-
 
 }
